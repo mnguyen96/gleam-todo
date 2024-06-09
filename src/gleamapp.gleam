@@ -38,7 +38,6 @@ pub fn add_todo(task: String) {
       expecting: dynamic.bool,
     )
   list_todos()
-  io.println("added todo: " <> task)
 }
 
 pub fn list_todos() {
@@ -59,7 +58,7 @@ pub fn list_todos() {
         1 -> "X"
         _ -> "O"
       }
-      <> "        "
+      <> string.pad_left("", to: 8, with: " ")
       <> x.1,
     )
   })
