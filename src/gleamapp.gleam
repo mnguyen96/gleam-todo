@@ -65,7 +65,7 @@ pub fn list_todos() {
   Nil
 }
 
-pub fn complete_todo(id_string: String) {
+pub fn complete_todo(id id_string: String) {
   use conn <- sqlight.with_connection("todo.sqlight")
   case int.parse(id_string) {
     Ok(formatted_id) -> {
@@ -83,7 +83,7 @@ pub fn complete_todo(id_string: String) {
   list_todos()
 }
 
-pub fn delete_todo(id_string: String) -> Nil {
+pub fn delete_todo(id id_string: String) -> Nil {
   use conn <- sqlight.with_connection("todo.sqlight")
   case int.parse(id_string) {
     Ok(formatted_id) -> {
