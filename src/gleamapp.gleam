@@ -50,10 +50,17 @@ pub fn list_todos() {
       with: [],
       expecting: dynamic.tuple3(dynamic.int, dynamic.string, dynamic.int),
     )
-  io.println("ID   COMPLETE TASK")
+  io.println("ID  COMPLETE TASK")
   list.map(result.unwrap(query, []), fn(x) {
     io.println(
-      int.to_string(x.0) <> "    " <> int.to_string(x.2) <> "          " <> x.1,
+      string.pad_right(int.to_string(x.0), to: 4, with: " ")
+      <> case x.2 {
+        0 -> "O"
+        1 -> "X"
+        _ -> "O"
+      }
+      <> "        "
+      <> x.1,
     )
   })
   Nil
@@ -74,6 +81,7 @@ pub fn complete_todo(id_string: String) {
     }
     Error(_) -> Nil
   }
+  list_todos()
 }
 
 pub fn delete_todo(id_string: String) -> Nil {
@@ -91,4 +99,5 @@ pub fn delete_todo(id_string: String) -> Nil {
     }
     Error(_) -> Nil
   }
+  list_todos()
 }
