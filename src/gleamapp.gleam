@@ -17,6 +17,9 @@ pub fn main() {
 
   case argv.load().arguments {
     ["add", ..task] -> add_todo(task |> string.join(" "))
+    ["list"] -> list_todos()
+    ["complete", id] -> complete_todo(id)
+    ["delete", id] -> delete_todo(id)
     _ -> io.println("Usage: add <task>")
   }
 }
@@ -34,7 +37,7 @@ pub fn add_todo(task: String) {
       with: [sqlight.text(task)],
       expecting: dynamic.bool,
     )
-  let _list = list_todos()
+  list_todos()
   io.println("added todo: " <> task)
 }
 
@@ -47,10 +50,45 @@ pub fn list_todos() {
       with: [],
       expecting: dynamic.tuple3(dynamic.int, dynamic.string, dynamic.int),
     )
-  io.println("ID  COMPLETE TASK")
+  io.println("ID   COMPLETE TASK")
   list.map(result.unwrap(query, []), fn(x) {
     io.println(
-      int.to_string(x.0) <> "   " <> int.to_string(x.2) <> "          " <> x.1,
+      int.to_string(x.0) <> "    " <> int.to_string(x.2) <> "          " <> x.1,
     )
   })
+  Nil
+}
+
+pub fn complete_todo(id_string: String) {
+  use conn <- sqlight.with_connection("todo.sqlight")
+  case int.parse(id_string) {
+    Ok(formatted_id) -> {
+      let _query =
+        sqlight.query(
+          "Update todos set complete = (true) where id = ?",
+          on: conn,
+          with: [sqlight.int(formatted_id)],
+          expecting: dynamic.int,
+        )
+      Nil
+    }
+    Error(_) -> Nil
+  }
+}
+
+pub fn delete_todo(id_string: String) -> Nil {
+  use conn <- sqlight.with_connection("todo.sqlight")
+  case int.parse(id_string) {
+    Ok(formatted_id) -> {
+      let _query =
+        sqlight.query(
+          "delete from todos where id = ?",
+          on: conn,
+          with: [sqlight.int(formatted_id)],
+          expecting: dynamic.int,
+        )
+      Nil
+    }
+    Error(_) -> Nil
+  }
 }
